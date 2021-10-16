@@ -101,10 +101,16 @@ export default {
   },
   methods: {
     addPlayerToDatabase(playerName) {
-      if (playerName !== '') {
-        this.$fire.database.ref('players/' + playerName).set(this.player)
-        alert('送信が成功しました')
-      }
+      const playerRef = this.$fire.database.ref('players/' + playerName)
+
+      playerRef.transaction((currentData) => {
+        if (playerName !== '' && currentData === null) {
+          playerRef.set(this.player)
+          alert('送信が成功しました')
+        } else {
+          alert('値を確認してください。送信が失敗しました')
+        }
+      })
     },
   },
 }
